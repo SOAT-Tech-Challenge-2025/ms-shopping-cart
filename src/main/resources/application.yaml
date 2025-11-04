@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: "ms-shopping-cart"
+  sql:
+    init:
+      continue-on-error: true
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    driverClassName: org.postgresql.Driver
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+    actuator:
+      endpoints:
+        web:
+          exposure:
+            include: '*'
+      endpoint:
+        prometheus:
+          enabled: true
+      metrics:
+        enable:
+          all: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /ms-shopping-cart
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      base-path: /ms-shopping-cart/actuator
+      exposure:
+        include:
+          - health
+          - info
+
+logging:
+  level:
+    root: ERROR
+    org.springframework: ERROR
+    org.hibernate: ERROR
+    com.zaxxer.hikari: ERROR
+    com.store.soattechchallenge: INFO
