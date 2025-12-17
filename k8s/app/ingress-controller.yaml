@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ms-shopping-cart-route
+  namespace: tech-challenge
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /soat-fast-food/v1/ms-shopping-cart
+            pathType: Prefix
+            backend:
+              service:
+                name: ms-shopping-cart-service
+                port:
+                  number: 80
