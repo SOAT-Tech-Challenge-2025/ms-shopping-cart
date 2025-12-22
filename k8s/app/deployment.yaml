@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-shopping-cart-deployment
+  namespace: tech-challenge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-shopping-cart-app
+  template:
+    metadata:
+      labels:
+        app: ms-shopping-cart-app
+    spec:
+      containers:
+        - name: ms-shopping-cart-app
+          image: public.ecr.aws/p6c0d2v5/fiap-soat-techchallenge:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+
+          env:
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SPRING_DATASOURCE_URL
+
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SPRING_DATASOURCE_USERNAME
+
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SPRING_DATASOURCE_PASSWORD
