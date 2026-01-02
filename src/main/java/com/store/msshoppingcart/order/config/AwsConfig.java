@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.config;
+package com.store.msshoppingcart.order.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -22,6 +22,9 @@ public class AwsConfig {
     @Value("${aws.region}")
     private String region;
 
+    @Value("${aws.account.id}")
+    private String accountId;
+
     @Bean
     public AmazonSNS snsClient() {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
@@ -30,4 +33,5 @@ public class AwsConfig {
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
+
 }

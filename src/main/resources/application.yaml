@@ -77,6 +77,9 @@ aws:
     access:
       key: ${AWS_SECRET_ACCESS_KEY:teste}
   region: ${AWS_REGION:us-east-1}
+  account:
+    id: ${AWS_ACCOUNT_ID:000000000000}
+
 
 # ===============================
 # LOGGING

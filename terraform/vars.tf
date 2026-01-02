@@ -42,6 +42,12 @@ variable "aws_region" {
   sensitive   = true
 }
 
+variable "aws_account_id" {
+  description = "The AWS account ID"
+  type        = string
+}
+
+
 variable "tags" {
   description = "A map of tags to assign to resources"
   default = {
