@@ -1,19 +1,11 @@
-name: Terraform Destroy
-
-# Permite execução manual
-on:
-  workflow_dispatch:
-
-env:
-  APP_NAME: ms-shopping-cart
-  APP_IMAGE: public.ecr.aws/p6c0d2v5/ms-shopping-cart
-  APP_IMAGE_TAG: sha-${{ github.sha }}
-
-jobs:
+# =========================================================
+# TERRAFORM DESTROY
+# =========================================================
   terraform-destroy:
     name: Terraform Destroy
     runs-on: ubuntu-latest
     environment: production
+    if: github.event_name == 'workflow_dispatch'  # só roda se disparado manualmente
     defaults:
       run:
         working-directory: terraform
@@ -51,9 +43,12 @@ jobs:
         run: |
           terraform destroy -auto-approve \
             -var region="${{ vars.AWS_REGION }}" \
-            -var app_name="${{ env.APP_NAME }}" \
             -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
-            -var db_url="${{ vars.DB_URL }}" \
             -var db_user="${{ secrets.DB_USER }}" \
             -var db_password="${{ secrets.DB_PASSWORD }}" \
-            -var sns_topic_arn="${{ vars.SNS_TOPIC_ARN }}"
+            -var sns_topic_arn="${{ secrets.SNS_TOPIC_ARN }}" \
+            -var aws_access_key="${{ secrets.AWS_ACCESS_KEY }}" \
+            -var aws_access_secret="${{ secrets.AWS_ACCESS_SECRET }}" \
+            -var aws_region="${{ vars.AWS_REGION }}" \
+            -var aws_account_id="${{ secrets.AWS_ACCOUNT_ID }}" \
+            -var force_rollout="$(date +%s)"
