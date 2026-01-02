@@ -98,8 +98,9 @@ jobs:
       - name: Build and push App Image
         uses: docker/build-push-action@v6
         with:
+          context: docker/app
           push: true
-          file: ./Dockerfile-app
+          file: docker/app/Dockerfile
           tags: |
             ${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}
             ${{ env.APP_IMAGE }}:latest
