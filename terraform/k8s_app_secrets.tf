@@ -14,5 +14,6 @@ resource "kubernetes_secret" "app_secret" {
     AWS_ACCESS_KEY_ID          = var.aws_access_key
     AWS_SECRET_ACCESS_KEY      = var.aws_access_secret
     AWS_REGION                 = var.aws_region
+    AWS_ACCOUNT_ID             = var.aws_account_id
   }
 }
