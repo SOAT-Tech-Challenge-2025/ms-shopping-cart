@@ -59,12 +59,14 @@ jobs:
         run: |
           terraform plan \
             -var region="${{ vars.AWS_REGION }}" \
-            -var app_name="${{ env.APP_NAME }}" \
             -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
-            -var db_url="${{ secrets.JDBC_URL }}" \
             -var db_user="${{ secrets.DB_USER }}" \
             -var db_password="${{ secrets.DB_PASSWORD }}" \
             -var sns_topic_arn="${{ secrets.SNS_TOPIC_ARN }}" \
+            -var aws_access_key="${{ secrets.AWS_ACCESS_KEY }}" \
+            -var aws_access_secret="${{ secrets.AWS_ACCESS_SECRET }}" \
+            -var aws_region="${{ vars.AWS_REGION }}" \
+            -var aws_account_id="${{ secrets.AWS_ACCOUNT_ID }}" \
             -var force_rollout="$(date +%s)"
 
 # =========================================================
@@ -75,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: terraform-plan
-    if: github.ref == 'refs/heads/main' && github.repository == 'SOAT-Tech-Challenge-2025/soat-techchallenge'
+    if: github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repository
@@ -87,6 +89,8 @@ jobs:
           registry: public.ecr.aws
           username: ${{ secrets.AWS_ACCESS_KEY }}
           password: ${{ secrets.AWS_ACCESS_SECRET }}
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -108,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs: build-and-push
-    if: github.ref == 'refs/heads/main' && github.repository == 'SOAT-Tech-Challenge-2025/soat-techchallenge'
+    if: github.ref == 'refs/heads/main'
     defaults:
       run:
         working-directory: terraform
@@ -121,6 +125,9 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.13"
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -146,10 +153,12 @@ jobs:
         run: |
           terraform apply -auto-approve \
             -var region="${{ vars.AWS_REGION }}" \
-            -var app_name="${{ env.APP_NAME }}" \
             -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
-            -var db_url="${{ secrets.JDBC_URL }}" \
             -var db_user="${{ secrets.DB_USER }}" \
             -var db_password="${{ secrets.DB_PASSWORD }}" \
             -var sns_topic_arn="${{ secrets.SNS_TOPIC_ARN }}" \
+            -var aws_access_key="${{ secrets.AWS_ACCESS_KEY }}" \
+            -var aws_access_secret="${{ secrets.AWS_ACCESS_SECRET }}" \
+            -var aws_region="${{ vars.AWS_REGION }}" \
+            -var aws_account_id="${{ secrets.AWS_ACCOUNT_ID }}" \
             -var force_rollout="$(date +%s)"
