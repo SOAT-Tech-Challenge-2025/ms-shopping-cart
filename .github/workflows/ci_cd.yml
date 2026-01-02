@@ -179,3 +179,9 @@ jobs:
             -var aws_region="${{ vars.AWS_REGION }}" \
             -var aws_account_id="${{ secrets.AWS_ACCOUNT_ID }}" \
             -var force_rollout="$(date +%s)"
+
+      - name: Log Ingress Host/IP
+        run: |
+          NAMESPACE="tech-challenge"
+          echo "Listando todos os ingress no namespace $NAMESPACE..."
+          kubectl get ingress -n $NAMESPACE -o jsonpath='{range .items[*]}{.metadata.name}{" -> "}{.status.loadBalancer.ingress[0].hostname}{"\n"}{end}'
