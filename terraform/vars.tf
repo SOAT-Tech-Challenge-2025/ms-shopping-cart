@@ -29,17 +29,17 @@ variable "sns_topic_arn" {
 
 variable "aws_access_key" {
   description = "The AWS access key ID"
-  sensitive = true
+  sensitive   = true
 }
 
 variable "aws_access_secret" {
   description = "The AWS access secret ID"
-  sensitive = true
+  sensitive   = true
 }
 
 variable "aws_region" {
   description = "The AWS region for AWS services"
-  sensitive = true
+  sensitive   = true
 }
 
 variable "tags" {
