@@ -180,7 +180,11 @@ jobs:
             -var aws_account_id="${{ secrets.AWS_ACCOUNT_ID }}" \
             -var force_rollout="$(date +%s)"
 
-      - name: Log Ingress Host/IP
+      - name: Configure kubectl for EKS
+        run: |
+          aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }}
+
+      - name: Log Ingress Hosts/IPs
         run: |
           NAMESPACE="tech-challenge"
           echo "Listando todos os ingress no namespace $NAMESPACE..."
