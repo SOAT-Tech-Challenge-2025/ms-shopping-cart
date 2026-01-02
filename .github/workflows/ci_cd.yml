@@ -38,17 +38,17 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          aws-region: ${{ vars.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
 
       - name: Create backend.hcl
         run: |
           cat << EOF > backend.hcl
-          bucket         = "${{ vars.TF_BACKEND_BUCKET }}"
-          key            = "${{ vars.TF_BACKEND_KEY }}"
-          region         = "${{ vars.AWS_REGION }}"
-          dynamodb_table = "${{ vars.TF_BACKEND_DYNAMO_TABLE }}"
+          bucket         = "${{ env.TF_BACKEND_BUCKET }}"
+          key            = "${{ env.TF_BACKEND_KEY }}"
+          region         = "${{ env.AWS_REGION }}"
+          dynamodb_table = "${{ env.TF_BACKEND_DYNAMO_TABLE }}"
           encrypt        = true
           EOF
 
@@ -58,13 +58,15 @@ jobs:
       - name: Terraform Plan
         run: |
           terraform plan \
-            -var region="${{ vars.AWS_REGION }}" \
+            -var region="${{ env.AWS_REGION }}" \
             -var app_name="${{ env.APP_NAME }}" \
             -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
-            -var db_url="${{ vars.DB_URL }}" \
+            -var db_url="${{ secrets.JDBC_URL }}" \
             -var db_user="${{ secrets.DB_USER }}" \
             -var db_password="${{ secrets.DB_PASSWORD }}" \
-            -var sns_topic_arn="${{ vars.SNS_TOPIC_ARN }}"
+            -var sns_topic_arn="${{ secrets.SNS_TOPIC_ARN }}" \
+            -var force_rollout="$(date +%s)"
+
 # =========================================================
 # BUILD & PUSH IMAGE
 # =========================================================
@@ -97,6 +99,7 @@ jobs:
           tags: |
             ${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}
             ${{ env.APP_IMAGE }}:latest
+
 # =========================================================
 # TERRAFORM APPLY
 # =========================================================
@@ -122,17 +125,17 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          aws-region: ${{ vars.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
 
       - name: Create backend.hcl
         run: |
           cat << EOF > backend.hcl
-          bucket         = "${{ vars.TF_BACKEND_BUCKET }}"
-          key            = "${{ vars.TF_BACKEND_KEY }}"
-          region         = "${{ vars.AWS_REGION }}"
-          dynamodb_table = "${{ vars.TF_BACKEND_DYNAMO_TABLE }}"
+          bucket         = "${{ env.TF_BACKEND_BUCKET }}"
+          key            = "${{ env.TF_BACKEND_KEY }}"
+          region         = "${{ env.AWS_REGION }}"
+          dynamodb_table = "${{ env.TF_BACKEND_DYNAMO_TABLE }}"
           encrypt        = true
           EOF
 
@@ -142,10 +145,10 @@ jobs:
       - name: Terraform Apply
         run: |
           terraform apply -auto-approve \
-            -var region="${{ vars.AWS_REGION }}" \
+            -var region="${{ env.AWS_REGION }}" \
             -var app_name="${{ env.APP_NAME }}" \
             -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
-            -var db_url="${{ secrets.DB_URL }}" \
+            -var db_url="${{ secrets.JDBC_URL }}" \
             -var db_user="${{ secrets.DB_USER }}" \
             -var db_password="${{ secrets.DB_PASSWORD }}" \
             -var sns_topic_arn="${{ secrets.SNS_TOPIC_ARN }}" \
