@@ -1,11 +1,14 @@
 package com.store.msshoppingcart.order.application.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.msshoppingcart.order.application.usecases.OrderUseCases;
 import com.store.msshoppingcart.order.domain.model.Order;
 import com.store.msshoppingcart.order.domain.model.OrderProduct;
-import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.OrderRequestDTO;
-import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.OrderResponseDTO;
+import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.*;
+import com.store.msshoppingcart.order.infrastructure.adapters.in.mappers.OrderSNSMapper;
 import com.store.msshoppingcart.order.infrastructure.adapters.in.utils.OrderUtils;
+import com.store.msshoppingcart.order.infrastructure.adapters.out.repository.impl.ProductProductCategoryRepositoryImpl;
+import com.store.msshoppingcart.order.infrastructure.adapters.out.repository.impl.SnsPublisherRepositoryImpl;
 import com.store.msshoppingcart.order.infrastructure.adapters.out.repository.impl.OrderRepositoryImpl;
 import com.store.msshoppingcart.utils.exception.CustomException;
 import org.springframework.data.domain.Page;
@@ -23,22 +26,89 @@ import java.util.UUID;
 public class OrderServiceImpl implements OrderUseCases {
 
     public final OrderRepositoryImpl adaptersRepository;
+    public final ProductProductCategoryRepositoryImpl adapterProductCategoryRepository;
+    private final SnsPublisherRepositoryImpl snsPublisherRepositoryImpl;
 
-    public OrderServiceImpl(OrderRepositoryImpl adaptersRepository) {
+    public OrderServiceImpl(OrderRepositoryImpl adaptersRepository, ProductProductCategoryRepositoryImpl adapterProductCategoryRepository, SnsPublisherRepositoryImpl snsPublisherRepositoryImpl) {
         this.adaptersRepository = adaptersRepository;
+        this.adapterProductCategoryRepository = adapterProductCategoryRepository;
+        this.snsPublisherRepositoryImpl = snsPublisherRepositoryImpl;
     }
 
     @Override
-    public Optional<OrderResponseDTO> saveOrder(OrderRequestDTO orderRequestDTO) {
+    public void saveOrder(OrderRequestDTO orderRequestDTO) {
+
+        OrderSNSMapper orderSNSMapper = OrderSNSMapper.INSTANCE;
         String orderId = adaptersRepository.orderId();
-        List<OrderProduct> orderProducts = OrderUtils.groupAndSumProducts(orderRequestDTO.getProducts(), orderId);
+
+        List<OrderProduct> orderProducts =
+                OrderUtils.groupAndSumProducts(orderRequestDTO.getProducts(), orderId);
+
         double totalOrder = orderProducts.stream()
                 .mapToDouble(OrderProduct::getVlQtItem)
                 .sum();
-        Order orderRequestModelModel = new Order(orderId, totalOrder, OrderUtils.somarPreparationTime(orderRequestDTO.getProducts()), orderRequestDTO.getClientId(), orderProducts);
+
+        Order orderRequestModelModel = new Order(
+                orderId,
+                totalOrder,
+                OrderUtils.somarPreparationTime(orderRequestDTO.getProducts()),
+                orderRequestDTO.getClientId(),
+                orderProducts
+        );
+
         try {
             adaptersRepository.save(orderRequestModelModel);
-        }catch (Exception e) {
+            Optional<OrderResponseDTO> orderResponseOpt =
+                    adaptersRepository.findOrderById(orderId);
+
+            if (orderResponseOpt.isEmpty()) {
+                throw new CustomException(
+                        "Pedido não encontrado para publicação no SNS",
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                        LocalDateTime.now(),
+                        UUID.randomUUID()
+                );
+            }
+
+            OrderResponseDTO orderResponse = orderResponseOpt.get();
+
+            OrderSNSDTO orderSNS = orderSNSMapper.toSNS(orderResponse);
+            List<ProductSNS> enrichedProducts = orderResponse.getProducts()
+                    .stream()
+                    .map(productResponse -> {
+
+                        ProdutoCategoriaDTO produtoCategoria =
+                                adapterProductCategoryRepository
+                                        .findCategoryById(productResponse.getProductId());
+
+                        ProductSNS productSNS = new ProductSNS();
+                        productSNS.setName(produtoCategoria.getNomeProduto());
+                        productSNS.setCategory(produtoCategoria.getNomeCategoria());
+                        productSNS.setQuantity(productResponse.getQuantity());
+                        productSNS.setUnit_price(productResponse.getVlUnitProduct());
+
+                        return productSNS;
+                    })
+                    .toList();
+
+            orderSNS.setProducts(enrichedProducts);
+
+            // Publica no SNS
+            try {
+                String message = new ObjectMapper().writeValueAsString(orderSNS);
+                snsPublisherRepositoryImpl.publish(message);
+            } catch (Exception e) {
+                throw new CustomException(
+                        "Erro ao publicar mensagem no SNS",
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                        LocalDateTime.now(),
+                        UUID.randomUUID()
+                );
+            }
+
+        } catch (Exception e) {
             throw new CustomException(
                     "Erro ao gerar o pedido",
                     HttpStatus.BAD_REQUEST,
@@ -47,8 +117,8 @@ public class OrderServiceImpl implements OrderUseCases {
                     UUID.randomUUID()
             );
         }
-        return adaptersRepository.findOrderById(orderId);
     }
+
 
     @Override
     public Page<OrderResponseDTO> getAllOrders(Pageable pageable) {

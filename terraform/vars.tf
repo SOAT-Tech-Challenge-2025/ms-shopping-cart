@@ -23,9 +23,23 @@ variable "db_password" {
   sensitive   = true
 }
 
-variable "jwt_expiration_time" {
-  description = "The expiration time for JWT tokens in seconds"
-  default     = "3600"
+variable "sns_topic_arn" {
+  description = "The ARN of the SNS topic for notifications"
+}
+
+variable "aws_access_key" {
+  description = "The AWS access key ID"
+  sensitive = true
+}
+
+variable "aws_access_secret" {
+  description = "The AWS access secret ID"
+  sensitive = true
+}
+
+variable "aws_region" {
+  description = "The AWS region for AWS services"
+  sensitive = true
 }
 
 variable "tags" {
