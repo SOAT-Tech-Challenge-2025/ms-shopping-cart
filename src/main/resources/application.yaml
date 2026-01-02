@@ -1,14 +1,17 @@
 spring:
   application:
-    name: "ms-shopping-cart"
+    name: ms-shopping-cart
+
   sql:
     init:
       continue-on-error: true
+
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    driverClassName: org.postgresql.Driver
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/soat}
+    driver-class-name: org.postgresql.Driver
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
+
   jpa:
     show-sql: false
     hibernate:
@@ -17,23 +20,14 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
-    actuator:
-      endpoints:
-        web:
-          exposure:
-            include: '*'
-      endpoint:
-        prometheus:
-          enabled: true
-      metrics:
-        enable:
-          all: true
-
 server:
   port: 8080
   servlet:
     context-path: /ms-shopping-cart
 
+# ===============================
+# ACTUATOR
+# ===============================
 management:
   server:
     port: 8081
@@ -44,11 +38,53 @@ management:
         include:
           - health
           - info
+          - prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    enable:
+      all: true
 
+# ===============================
+# SWAGGER / SPRINGDOC
+# ===============================
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+
+# ===============================
+# SNS
+# ===============================
+sns:
+  service:
+    name: sns-ms-shopping-cart
+    topic:
+      arn: ${SNS_TOPIC_ARN:arn:aws:sns:us-east-1:000000000000:sns-ms-shopping-cart}
+
+# ===============================
+# AWS
+# ===============================
+aws:
+  access:
+    key:
+      id: ${AWS_ACCESS_KEY_ID:teste}
+  secret:
+    access:
+      key: ${AWS_SECRET_ACCESS_KEY:teste}
+  region: ${AWS_REGION:us-east-1}
+
+# ===============================
+# LOGGING
+# ===============================
 logging:
   level:
-    root: ERROR
-    org.springframework: ERROR
-    org.hibernate: ERROR
-    com.zaxxer.hikari: ERROR
-    com.store.soattechchallenge: INFO
+    root: INFO
+    org.springframework: INFO
+    org.hibernate: INFO
+    com.zaxxer.hikari: INFO
+    com.store.msshoppingcart: INFO

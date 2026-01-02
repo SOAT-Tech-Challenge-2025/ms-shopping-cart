@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface OrderAdaptersGetRepository extends JpaRepository<JPAOrderEntity,String> {
     @Query(value = "SELECT generate_order_id()", nativeQuery = true)
     String getByOrderId();
+
 }

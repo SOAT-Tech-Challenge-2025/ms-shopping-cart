@@ -1,0 +1,25 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+# ===============================
+# AWS (LOCALSTACK)
+# ===============================
+aws:
+  region: us-east-1
+
+# ===============================
+# SNS (LOCALSTACK)
+# ===============================
+sns:
+  service:
+    topic:
+      arn: arn:aws:sns:us-east-1:000000000000:sns-ms-shopping-cart
+
+# ===============================
+# LOG (ajuda debug)
+# ===============================
+logging:
+  level:
+    com.amazonaws: DEBUG

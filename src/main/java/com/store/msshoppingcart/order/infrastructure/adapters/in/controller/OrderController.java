@@ -6,6 +6,7 @@ import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.OrderRespon
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,8 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<Optional<OrderResponseDTO>> createProduct(@RequestBody OrderRequestDTO Product) {
-        return ResponseEntity.status(201).body(orderService.saveOrder(Product));
+        orderService.saveOrder(Product);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping
