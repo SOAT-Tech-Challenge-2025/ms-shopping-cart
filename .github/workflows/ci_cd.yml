@@ -1,0 +1,152 @@
+name: CI / CD - ms-shopping-cart
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  APP_NAME: ms-shopping-cart
+  APP_IMAGE: public.ecr.aws/p6c0d2v5/ms-shopping-cart
+  APP_IMAGE_TAG: sha-${{ github.sha }}
+
+jobs:
+# =========================================================
+# TERRAFORM PLAN
+# =========================================================
+  terraform-plan:
+    name: Terraform Plan
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.13"
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+
+      - name: Create backend.hcl
+        run: |
+          cat << EOF > backend.hcl
+          bucket         = "${{ vars.TF_BACKEND_BUCKET }}"
+          key            = "${{ vars.TF_BACKEND_KEY }}"
+          region         = "${{ vars.AWS_REGION }}"
+          dynamodb_table = "${{ vars.TF_BACKEND_DYNAMO_TABLE }}"
+          encrypt        = true
+          EOF
+
+      - name: Terraform Init
+        run: terraform init -backend-config=backend.hcl
+
+      - name: Terraform Plan
+        run: |
+          terraform plan \
+            -var region="${{ vars.AWS_REGION }}" \
+            -var app_name="${{ env.APP_NAME }}" \
+            -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
+            -var db_url="${{ vars.DB_URL }}" \
+            -var db_user="${{ secrets.DB_USER }}" \
+            -var db_password="${{ secrets.DB_PASSWORD }}" \
+            -var sns_topic_arn="${{ vars.SNS_TOPIC_ARN }}"
+# =========================================================
+# BUILD & PUSH IMAGE
+# =========================================================
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: ubuntu-latest
+    environment: production
+    needs: terraform-plan
+    if: github.ref == 'refs/heads/main' && github.repository == 'SOAT-Tech-Challenge-2025/soat-techchallenge'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Login to Amazon ECR Public
+        uses: docker/login-action@v3
+        with:
+          registry: public.ecr.aws
+          username: ${{ secrets.AWS_ACCESS_KEY }}
+          password: ${{ secrets.AWS_ACCESS_SECRET }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push App Image
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          file: ./Dockerfile-app
+          tags: |
+            ${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}
+            ${{ env.APP_IMAGE }}:latest
+# =========================================================
+# TERRAFORM APPLY
+# =========================================================
+  terraform-apply:
+    name: Terraform Apply
+    runs-on: ubuntu-latest
+    environment: production
+    needs: build-and-push
+    if: github.ref == 'refs/heads/main' && github.repository == 'SOAT-Tech-Challenge-2025/soat-techchallenge'
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.13"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-region: ${{ vars.AWS_REGION }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+
+      - name: Create backend.hcl
+        run: |
+          cat << EOF > backend.hcl
+          bucket         = "${{ vars.TF_BACKEND_BUCKET }}"
+          key            = "${{ vars.TF_BACKEND_KEY }}"
+          region         = "${{ vars.AWS_REGION }}"
+          dynamodb_table = "${{ vars.TF_BACKEND_DYNAMO_TABLE }}"
+          encrypt        = true
+          EOF
+
+      - name: Terraform Init
+        run: terraform init -backend-config=backend.hcl
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve \
+            -var region="${{ vars.AWS_REGION }}" \
+            -var app_name="${{ env.APP_NAME }}" \
+            -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
+            -var db_url="${{ vars.DB_URL }}" \
+            -var db_user="${{ secrets.DB_USER }}" \
+            -var db_password="${{ secrets.DB_PASSWORD }}" \
+            -var sns_topic_arn="${{ vars.SNS_TOPIC_ARN }}" \
+            -var force_rollout="$(date +%s)"
