@@ -182,6 +182,7 @@ jobs:
 
       - name: Configure kubectl for EKS
         run: |
+          echo "Configurando kubectl para o cluster ${{ vars.EKS_CLUSTER_NAME }}..."
           aws eks --region ${{ vars.AWS_REGION }} update-kubeconfig --name ${{ vars.EKS_CLUSTER_NAME }}
 
       - name: Log Ingress Hosts/IPs
