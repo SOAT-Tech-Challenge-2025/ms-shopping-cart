@@ -1,6 +1,4 @@
-# =========================================================
-# TERRAFORM DESTROY
-# =========================================================
+
   terraform-destroy:
     name: Terraform Destroy
     runs-on: ubuntu-latest
