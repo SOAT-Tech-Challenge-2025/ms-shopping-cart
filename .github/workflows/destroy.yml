@@ -1,0 +1,48 @@
+terraform-destroy:
+  name: Terraform Destroy
+  runs-on: ubuntu-latest
+  environment: production
+  if: github.ref == 'refs/heads/main' && github.repository == 'SOAT-Tech-Challenge-2025/soat-techchallenge'
+  defaults:
+    run:
+      working-directory: terraform
+
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.13"
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v5
+      with:
+        aws-region: ${{ vars.AWS_REGION }}
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+
+    - name: Create backend.hcl
+      run: |
+        cat << EOF > backend.hcl
+        bucket         = "${{ vars.TF_BACKEND_BUCKET }}"
+        key            = "${{ vars.TF_BACKEND_KEY }}"
+        region         = "${{ vars.AWS_REGION }}"
+        dynamodb_table = "${{ vars.TF_BACKEND_DYNAMO_TABLE }}"
+        encrypt        = true
+        EOF
+
+    - name: Terraform Init
+      run: terraform init -backend-config=backend.hcl
+
+    - name: Terraform Destroy
+      run: |
+        terraform destroy -auto-approve \
+          -var region="${{ vars.AWS_REGION }}" \
+          -var app_name="${{ env.APP_NAME }}" \
+          -var app_image="${{ env.APP_IMAGE }}:${{ env.APP_IMAGE_TAG }}" \
+          -var db_url="${{ vars.DB_URL }}" \
+          -var db_user="${{ secrets.DB_USER }}" \
+          -var db_password="${{ secrets.DB_PASSWORD }}" \
+          -var sns_topic_arn="${{ vars.SNS_TOPIC_ARN }}"
