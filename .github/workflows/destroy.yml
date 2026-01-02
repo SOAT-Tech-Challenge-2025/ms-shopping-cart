@@ -1,11 +1,16 @@
-# =========================================================
-# TERRAFORM DESTROY
-# =========================================================
+name: Destroy Infrastructure
+on:
+  workflow_dispatch:
+
+env:
+  APP_IMAGE: "public.ecr.aws/p6c0d2v5/ms-shopping-cart"
+
+jobs:
   terraform-destroy:
     name: Terraform Destroy
     runs-on: ubuntu-latest
     environment: production
-    if: github.event_name == 'workflow_dispatch'  # só roda se disparado manualmente
+    if: github.event_name == 'workflow_dispatch'  # só roda manualmente
     defaults:
       run:
         working-directory: terraform
