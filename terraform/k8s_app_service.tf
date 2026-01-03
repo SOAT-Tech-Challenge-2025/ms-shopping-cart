@@ -8,7 +8,7 @@ resource "kubernetes_service" "app" {
     type = "ClusterIP"
 
     selector = {
-      app = "ms-shopping-cart-app"
+      app = "tech-challenge-app"
     }
 
     port {
