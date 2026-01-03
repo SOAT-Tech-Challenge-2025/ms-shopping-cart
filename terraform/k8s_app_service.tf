@@ -1,14 +1,19 @@
 resource "kubernetes_service" "app" {
   metadata {
-    name = "ms-shopping-cart-service"
+    name      = "ms-shopping-cart-service"
     namespace = kubernetes_namespace.tech_challenge.metadata[0].name
   }
 
   spec {
     type = "ClusterIP"
+
     selector = {
       app = "ms-shopping-cart-app"
     }
-    port { port = 80 target_port = 8080 }
+
+    port {
+      port        = 80
+      target_port = 8080
+    }
   }
 }
