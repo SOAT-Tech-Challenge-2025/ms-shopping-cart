@@ -23,7 +23,7 @@ spring:
 server:
   port: 8080
   servlet:
-    context-path: /ms-shopping-cart
+    context-path: /soat-fast-food/v1/ms-shopping-cart
 
 # ===============================
 # ACTUATOR
