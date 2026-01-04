@@ -4,7 +4,7 @@ resource "kubernetes_ingress_v1" "app" {
     namespace = kubernetes_namespace.tech_challenge.metadata[0].name
 
     annotations = {
-      "nginx.ingress.kubernetes.io/backend-protocol" = "HTTP"
+      "nginx.ingress.kubernetes.io/backend-protocol"   = "HTTP"
       "nginx.ingress.kubernetes.io/proxy-read-timeout" = "60"
       "nginx.ingress.kubernetes.io/proxy-send-timeout" = "60"
     }
