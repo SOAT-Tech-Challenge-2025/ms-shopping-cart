@@ -6,6 +6,8 @@ import com.amazonaws.services.sns.model.PublishRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 public class SnsPublisherRepositoryImpl implements SnsPublisherRepository {
 
@@ -24,9 +26,12 @@ public class SnsPublisherRepositoryImpl implements SnsPublisherRepository {
     public void publish(String message) {
         PublishRequest request = new PublishRequest()
                 .withTopicArn(topicArn)
-                .withMessage(message);
+                .withMessage(message)
+                .withMessageGroupId("order")
+                .withMessageDeduplicationId(UUID.randomUUID().toString());
 
         snsClient.publish(request);
     }
+
 }
 
