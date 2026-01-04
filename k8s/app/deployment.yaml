@@ -13,6 +13,7 @@ spec:
       labels:
         app: ms-shopping-cart-app
     spec:
+      serviceAccountName: ms-shopping-cart-sa
       containers:
         - name: ms-shopping-cart-app
           image: public.ecr.aws/p6c0d2v5/fiap-soat-techchallenge:latest

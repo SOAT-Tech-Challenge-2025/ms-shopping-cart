@@ -27,6 +27,7 @@ resource "kubernetes_deployment" "app" {
       }
 
       spec {
+        service_account_name = kubernetes_service_account.ms_shopping_cart_sa.metadata[0].name
         container {
           name              = "ms-shopping-cart-app"
           image             = var.app_image
