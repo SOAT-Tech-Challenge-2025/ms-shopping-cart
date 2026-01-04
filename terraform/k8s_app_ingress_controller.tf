@@ -2,10 +2,6 @@ resource "kubernetes_ingress_v1" "app" {
   metadata {
     name      = "ms-shopping-cart-route"
     namespace = kubernetes_namespace.tech_challenge.metadata[0].name
-
-    annotations = {
-      "nginx.ingress.kubernetes.io/rewrite-target" = "/$1"
-    }
   }
 
   spec {
@@ -14,7 +10,7 @@ resource "kubernetes_ingress_v1" "app" {
     rule {
       http {
         path {
-          path      = "/soat-fast-food/v1/(.*)"
+          path      = "/soat-fast-food/v1/ms-shopping-cart"
           path_type = "Prefix"
 
           backend {
