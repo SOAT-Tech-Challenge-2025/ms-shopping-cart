@@ -125,11 +125,8 @@ jobs:
         with:
           args: >
             -Dsonar.organization=soat-tech-challenge-2025
-            -Dsonar.projectKey=SOAT-Tech-Challenge-2025_ms-shopping-cart
-            -Dsonar.projectName=ms-shopping-cart
             -Dsonar.java.binaries=target
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
-
 # =========================================================
 # BUILD & PUSH IMAGE
 # =========================================================
