@@ -10,7 +10,7 @@ resource "kubernetes_ingress_v1" "app" {
     rule {
       http {
         path {
-          path      = "/soat-fast-food/v1/ms-shopping-cart"
+          path      = "/soat-fast-food/v1"
           path_type = "Prefix"
 
           backend {
