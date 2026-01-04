@@ -5,7 +5,7 @@ resource "kubernetes_service" "app" {
   }
 
   spec {
-    type = "LoadBalancer"
+    type = "ClusterIP"
 
     selector = {
       app = "ms-shopping-cart-app"
