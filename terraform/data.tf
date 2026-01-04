@@ -9,11 +9,6 @@ data "terraform_remote_state" "infra" {
   }
 }
 
-locals {
-  oidc_provider_arn = data.terraform_remote_state.infra.outputs.oidc_provider_arn
-  oidc_provider_url = data.terraform_remote_state.infra.outputs.oidc_provider_url
-}
-
 data "aws_eks_cluster" "cluster" {
   name = data.terraform_remote_state.infra.outputs.cluster_name
 }
