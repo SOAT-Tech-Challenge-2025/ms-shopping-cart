@@ -45,3 +45,9 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: SPRING_DATASOURCE_PASSWORD
+
+            - name: SNS_TOPIC_ARN
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: SNS_TOPIC_ARN

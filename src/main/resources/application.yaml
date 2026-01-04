@@ -62,7 +62,7 @@ springdoc:
 # ===============================
 sns:
   service:
-    name: sns-ms-shopping-cart
+    name: order-created.fifo
     topic:
       arn: ${SNS_TOPIC_ARN:arn:aws:sns:us-east-1:000000000000:sns-ms-shopping-cart}
 
@@ -72,13 +72,13 @@ sns:
 aws:
   access:
     key:
-      id: ${AWS_ACCESS_KEY_ID:teste}
+      id: ${AWS_ACCESS_KEY_ID:}
   secret:
     access:
-      key: ${AWS_SECRET_ACCESS_KEY:teste}
+      key: ${AWS_SECRET_ACCESS_KEY:}
   region: ${AWS_REGION:us-east-1}
   account:
-    id: ${AWS_ACCOUNT_ID:000000000000}
+    id: ${AWS_ACCOUNT_ID:}
 
 
 # ===============================
