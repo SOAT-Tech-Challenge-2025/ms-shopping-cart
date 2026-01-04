@@ -11,24 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AwsConfig {
 
-    @Value("${aws.access.key.id}")
-    private String accessKeyId;
-
-    @Value("${aws.secret.access.key}")
-    private String secretAccessKey;
-
     @Value("${aws.region}")
     private String region;
 
-    @Value("${aws.account.id}")
-    private String accountId;
-
     @Bean
     public AmazonSNS snsClient() {
-        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
         return AmazonSNSClientBuilder.standard()
                 .withRegion(region)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }
 
