@@ -23,7 +23,7 @@ spring:
 server:
   port: 8080
   servlet:
-    context-path: /ms-shopping-cart
+    context-path: /
 
 # ===============================
 # ACTUATOR
@@ -33,7 +33,7 @@ management:
     port: 8081
   endpoints:
     web:
-      base-path: /ms-shopping-cart/actuator
+      base-path: /actuator
       exposure:
         include:
           - health
