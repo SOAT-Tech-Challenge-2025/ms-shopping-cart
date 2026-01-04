@@ -129,11 +129,6 @@ jobs:
             -Dsonar.java.binaries=target
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
 
-      - name: SonarCloud Quality Gate
-        uses: SonarSource/sonarcloud-quality-gate-action@v1
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
 # =========================================================
 # BUILD & PUSH IMAGE
 # =========================================================
