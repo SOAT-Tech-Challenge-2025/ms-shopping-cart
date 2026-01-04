@@ -23,25 +23,13 @@ resource "aws_iam_role" "ms_shopping_cart_irsa" {
   })
 }
 
-resource "aws_iam_policy" "ms_shopping_cart_sns_publish" {
-  name        = "ms-shopping-cart-sns-publish"
-  description = "Permite o ms-shopping-cart publicar mensagens no SNS"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "sns:Publish"
-        ]
-        Resource = "arn:aws:sns:us-east-1:089175280184:order-created.fifo"
-      }
-    ]
-  })
+data "aws_iam_policy" "ms_shopping_cart_sns_publish" {
+  name = "ms-shopping-cart-sns-publish"
 }
+
+
 resource "aws_iam_role_policy_attachment" "ms_shopping_cart_sns_attach" {
   role       = aws_iam_role.ms_shopping_cart_irsa.name
-  policy_arn = aws_iam_policy.ms_shopping_cart_sns_publish.arn
+  policy_arn = data.aws_iam_policy.ms_shopping_cart_sns_publish.arn
 }
 
