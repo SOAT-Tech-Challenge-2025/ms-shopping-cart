@@ -11,6 +11,7 @@ import com.store.msshoppingcart.order.infrastructure.adapters.out.repository.imp
 import com.store.msshoppingcart.order.infrastructure.adapters.out.repository.impl.SnsPublisherRepositoryImpl;
 import com.store.msshoppingcart.order.infrastructure.adapters.out.repository.impl.OrderRepositoryImpl;
 import com.store.msshoppingcart.utils.exception.CustomException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderUseCases {
 
@@ -98,17 +99,20 @@ public class OrderServiceImpl implements OrderUseCases {
             try {
                 String message = new ObjectMapper().writeValueAsString(orderSNS);
                 snsPublisherRepositoryImpl.publish(message);
-            } catch (Exception e) {
-                throw new CustomException(
-                        "Erro ao publicar mensagem no SNS",
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
-                        LocalDateTime.now(),
-                        UUID.randomUUID()
-                );
-            }
+            }catch (Exception e) {
+                    log.error("Erro ao publicar mensagem no SNS. OrderId={}", orderId, e);
 
-        } catch (Exception e) {
+                    throw new CustomException(
+                            "Erro ao publicar mensagem no SNS",
+                            HttpStatus.INTERNAL_SERVER_ERROR,
+                            String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                            LocalDateTime.now(),
+                            UUID.randomUUID()
+                    );
+                }
+
+
+            } catch (Exception e) {
             throw new CustomException(
                     "Erro ao gerar o pedido",
                     HttpStatus.BAD_REQUEST,
