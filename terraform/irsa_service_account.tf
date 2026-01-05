@@ -7,4 +7,8 @@ resource "kubernetes_service_account" "ms_shopping_cart_sa" {
       "eks.amazonaws.com/role-arn" = aws_iam_role.ms_shopping_cart_irsa.arn
     }
   }
+
+  depends_on = [
+    kubernetes_namespace.tech_challenge
+  ]
 }
