@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.category.testes;
+package com.store.msshoppingcart.category;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.store.msshoppingcart.category.application.service.CategoryServiceImpl;
