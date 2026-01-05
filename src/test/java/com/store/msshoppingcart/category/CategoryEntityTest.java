@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.category.testes;
+package com.store.msshoppingcart.category;
 
 import com.store.msshoppingcart.category.infrastructure.adapters.out.model.CategoryEntity;
 import org.junit.jupiter.api.DisplayName;
