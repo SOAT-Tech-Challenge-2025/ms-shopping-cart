@@ -12,9 +12,10 @@ resource "aws_iam_role" "ms_shopping_cart_irsa" {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringEquals = {
-            "${replace(local.oidc_provider_url, "https://", "")}:sub" =
+            ("${replace(local.oidc_provider_url, "https://", "")}:sub") =
             "system:serviceaccount:tech-challenge:ms-shopping-cart-sa"
           }
+
         }
       }
     ]
