@@ -21,6 +21,7 @@ public class JPACategoryEntity {
         this.categoryName = categoryName;
     }
 
+
     public static CategoryEntity builder() {
         return new CategoryEntity();
     }
@@ -56,4 +57,15 @@ public class JPACategoryEntity {
                 ", categoryName='" + categoryName +
                 '}';
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JPACategoryEntity that = (JPACategoryEntity) o;
+        return java.util.Objects.equals(id, that.id) &&
+                java.util.Objects.equals(categoryName, that.categoryName);
+    }
+
+
+
 }

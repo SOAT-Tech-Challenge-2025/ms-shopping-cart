@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.product.teste;
+package com.store.msshoppingcart.order;
 
 import com.store.msshoppingcart.order.domain.model.OrderProduct;
 import org.junit.jupiter.api.DisplayName;

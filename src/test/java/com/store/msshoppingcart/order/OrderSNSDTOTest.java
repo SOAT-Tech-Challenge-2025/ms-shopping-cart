@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.product.teste;
+package com.store.msshoppingcart.order;
 
 import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.OrderSNSDTO;
 import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.ProductSNS;

@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.product.teste;
+package com.store.msshoppingcart.order;
 
 import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.ProdutoCategoriaDTO;
 import com.store.msshoppingcart.order.infrastructure.adapters.out.repository.ProductCategoryGetNameRepository;

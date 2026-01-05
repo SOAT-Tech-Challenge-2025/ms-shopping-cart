@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.product.teste;
+package com.store.msshoppingcart.order;
 
 import com.amazonaws.services.sns.AmazonSNS;
 import com.store.msshoppingcart.order.config.LocalAwsConfig;
