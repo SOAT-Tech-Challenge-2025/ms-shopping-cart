@@ -15,7 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ProductMapperImplTest {
+class ProductMapperImplT {
 
     private ProductMapperImpl productMapper;
     private ProductEntity productEntity;

@@ -39,7 +39,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
-public class CategorySteps {
+public class CategoryStepsIT {
 
     @Mock
     private CategoryServiceImpl serviceCategory;
