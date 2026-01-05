@@ -108,14 +108,14 @@ class CategoryServiceImplTest {
         // GIVEN
         Long id = 1L;
         CategoryResponseDTO expectedResponse = new CategoryResponseDTO("Categoria deletada");
-        when(adaptersRepository.deoleteById(id)).thenReturn(expectedResponse);
+        when(adaptersRepository.deleteById(id)).thenReturn(expectedResponse);
 
         // WHEN
         CategoryResponseDTO result = categoryService.deleteCategory(id);
 
         // THEN
         assertEquals(expectedResponse, result);
-        verify(adaptersRepository).deoleteById(id);
+        verify(adaptersRepository).deleteById(id);
     }
 
     @Test

@@ -128,7 +128,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
-    public CategoryResponseDTO deoleteById(Long id) {
+    public CategoryResponseDTO deleteById(Long id) {
         Optional<CategoryEntity> entity = repository.findById(id);
         if (entity.isEmpty()) {
             throw new CustomException(
@@ -139,22 +139,18 @@ public class CategoryRepositoryImpl implements CategoryRepository {
                     UUID.randomUUID()
             );
         }
-        if (entity.isPresent()) {
-            try {
+        try {
             repository.deleteProductsByCategoryId(id);
             repository.deleteCategoryById(id);
             return new CategoryResponseDTO("Categoria deletada");
-            }catch (Exception e) {
-                throw new CustomException(
-                        "Erro ao atualizar categoria: " + e.getMessage(),
-                        HttpStatus.BAD_REQUEST,
-                        String.valueOf(HttpStatus.BAD_REQUEST.value()),
-                        LocalDateTime.now(),
-                        UUID.randomUUID()
-                );
-            }
-        }else {
-            return new CategoryResponseDTO("Categoria não existe");
+        } catch (Exception e) {
+            throw new CustomException(
+                    "Erro ao atualizar categoria: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST,
+                    String.valueOf(HttpStatus.BAD_REQUEST.value()),
+                    LocalDateTime.now(),
+                    UUID.randomUUID()
+            );
         }
     }
 
