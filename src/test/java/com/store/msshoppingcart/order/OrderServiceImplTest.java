@@ -1,4 +1,4 @@
-package com.store.msshoppingcart.product.teste;
+package com.store.msshoppingcart.order;
 
 import com.store.msshoppingcart.order.application.service.OrderServiceImpl;
 import com.store.msshoppingcart.order.domain.repository.ProductCategoryRepository;
