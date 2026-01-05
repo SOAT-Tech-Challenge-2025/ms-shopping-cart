@@ -16,5 +16,5 @@ import org.junit.runner.RunWith;
         "html:target/cucumber-reports/categoria-criacao.html"
     }
 )
-public class CucumberCategoriaTest {
+public class CucumberCategoriaIT {
 }
