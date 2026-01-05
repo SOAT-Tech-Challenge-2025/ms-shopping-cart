@@ -52,7 +52,7 @@ public class CategoryServiceImpl implements CategoryUseCases {
 
     @Override
     public CategoryResponseDTO deleteCategory(Long id) {
-        return adaptersRepository.deoleteById(id);
+        return adaptersRepository.deleteById(id);
 
     }
 

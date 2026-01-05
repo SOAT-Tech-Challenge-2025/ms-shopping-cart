@@ -15,7 +15,7 @@ public interface CategoryRepository {
     Page<CategoryEntity> findAll(Pageable pageable);
     void save(Category category);
     CategoryResponseDTO update(Category category, Long id);
-    CategoryResponseDTO deoleteById(Long id);
+    CategoryResponseDTO deleteById(Long id);
     Optional<CategoryWithProductsDTO> findProductsByCategoryId(Long id);
 
 }

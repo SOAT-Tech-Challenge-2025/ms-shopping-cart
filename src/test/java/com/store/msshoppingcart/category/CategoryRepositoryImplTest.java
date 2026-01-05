@@ -105,7 +105,7 @@ class CategoryRepositoryImplTest {
         when(jpaRepository.findById(id)).thenReturn(Optional.of(entity));
 
         // Act
-        CategoryResponseDTO response = categoryRepository.deoleteById(id);
+        CategoryResponseDTO response = categoryRepository.deleteById(id);
 
         // Assert
         assertEquals("Categoria deletada", response.getMessage());
