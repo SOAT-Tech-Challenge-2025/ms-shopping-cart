@@ -63,6 +63,7 @@ jobs:
             -var db_user="${{ secrets.DB_USER }}" \
             -var db_password="${{ secrets.DB_PASSWORD }}" \
             -var sns_topic_arn="${{ secrets.SNS_TOPIC_ARN }}" \
+            -var sns_topic_arn="${{ secrets.API_URL }}" \
             -var aws_access_key="${{ secrets.AWS_ACCESS_KEY }}" \
             -var aws_access_secret="${{ secrets.AWS_ACCESS_SECRET }}" \
             -var aws_region="${{ vars.AWS_REGION }}" \
@@ -216,6 +217,7 @@ jobs:
             -var db_user="${{ secrets.DB_USER }}" \
             -var db_password="${{ secrets.DB_PASSWORD }}" \
             -var sns_topic_arn="${{ secrets.SNS_TOPIC_ARN }}" \
+            -var sns_topic_arn="${{ secrets.API_URL }}" \
             -var aws_access_key="${{ secrets.AWS_ACCESS_KEY }}" \
             -var aws_access_secret="${{ secrets.AWS_ACCESS_SECRET }}" \
             -var aws_region="${{ vars.AWS_REGION }}" \
