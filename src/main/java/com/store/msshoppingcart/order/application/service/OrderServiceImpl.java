@@ -41,7 +41,7 @@ public class OrderServiceImpl implements OrderUseCases {
     }
 
     @Override
-    public void saveOrder(OrderRequestDTO orderRequestDTO, String userid) {
+    public void saveOrder(OrderRequestDTO orderRequestDTO) {
 
         OrderSNSMapper orderSNSMapper = OrderSNSMapper.INSTANCE;
         String orderId = adaptersRepository.orderId();
@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderUseCases {
                 orderId,
                 totalOrder,
                 OrderUtils.somarPreparationTime(orderRequestDTO.getProducts()),
-                userid,
+                orderRequestDTO.getClientId(),
                 orderProducts
         );
 
