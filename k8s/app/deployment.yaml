@@ -52,3 +52,9 @@ spec:
                 secretKeyRef:
                   name: app-secret
                   key: SNS_TOPIC_ARN
+
+            - name: API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: API_URL
