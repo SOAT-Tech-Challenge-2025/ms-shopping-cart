@@ -59,7 +59,7 @@ class OrderServiceImplTest {
 
         // Act & Assert
         CustomException exception = assertThrows(CustomException.class, () ->
-                orderService.saveOrder(request)
+                orderService.saveOrder(request,"teste")
         );
 
         // O catch genérico do service relança como "Erro ao gerar o pedido"

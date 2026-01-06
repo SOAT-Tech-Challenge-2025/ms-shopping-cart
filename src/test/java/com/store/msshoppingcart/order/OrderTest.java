@@ -30,7 +30,6 @@ class OrderTest {
                 () -> assertEquals(id, order.getId()),
                 () -> assertEquals(total, order.getTotalAmountOrder()),
                 () -> assertEquals(minutes, order.getMinute()),
-                () -> assertEquals(clientId, order.getClientId()),
                 () -> assertEquals(products, order.getOrderProducts()),
                 () -> assertNotNull(order.getTimestamp(), "O timestamp deve ser gerado automaticamente")
         );
