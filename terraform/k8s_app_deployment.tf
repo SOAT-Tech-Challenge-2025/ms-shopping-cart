@@ -86,6 +86,15 @@ resource "kubernetes_deployment" "app" {
               }
             }
           }
+          env {
+            name = "API_URL"
+            value_from {
+              secret_key_ref {
+                name = kubernetes_secret.app_secret.metadata[0].name
+                key  = "API_URL"
+              }
+            }
+          }
         }
       }
     }
