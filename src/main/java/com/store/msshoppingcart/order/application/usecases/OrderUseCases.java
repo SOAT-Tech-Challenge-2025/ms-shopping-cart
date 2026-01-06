@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface OrderUseCases {
 
-    void saveOrder(OrderRequestDTO Product, String userId);
+    void saveOrder(OrderRequestDTO Product);
     Page<OrderResponseDTO> getAllOrders(Pageable pageable);
     Optional<OrderResponseDTO> getOrdeById(String id);
     Optional<OrderResponseDTO> updateOrder(String id, OrderRequestDTO orderRequestDTO);

@@ -80,9 +80,6 @@ aws:
   account:
     id: ${AWS_ACCOUNT_ID:}
 
-api:
-  url: ${API_URL:https://a2vsoor4q4.execute-api.us-east-1.amazonaws.com}
-
 # ===============================
 # LOGGING
 # ===============================

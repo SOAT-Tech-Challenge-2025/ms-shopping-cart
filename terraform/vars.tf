@@ -32,11 +32,6 @@ variable "aws_access_key" {
   sensitive   = true
 }
 
-variable "api_url" {
-  description = "api_url"
-  sensitive   = false
-}
-
 variable "aws_access_secret" {
   description = "The AWS access secret ID"
   sensitive   = true

@@ -5,8 +5,6 @@ import com.store.msshoppingcart.order.application.service.OrderServiceImpl;
 import com.store.msshoppingcart.order.infrastructure.adapters.in.controller.OrderController;
 import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.OrderRequestDTO;
 import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.OrderResponseDTO;
-import com.store.msshoppingcart.order.infrastructure.adapters.in.dto.UserAuthResponseDTO;
-import com.store.msshoppingcart.order.infrastructure.adapters.out.client.UserAuthClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,37 +34,28 @@ class OrderControllerTest {
     @MockBean
     private OrderServiceImpl orderService;
 
-    @MockBean
-    private UserAuthClient userAuthClient; // Adicionado este mock para resolver o erro de argumentos
-
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("POST /order - Deve criar um pedido validando o token")
+    @DisplayName("POST /order - Deve criar um pedido e retornar 201 Created")
     void createProduct_ShouldReturnCreated() throws Exception {
         // Arrange
         OrderRequestDTO request = new OrderRequestDTO();
-        String token = "Bearer eyJhbGciOiJIUzI1NiJ9...";
-
-        UserAuthResponseDTO authResponse = new UserAuthResponseDTO();
-        authResponse.setUser("48425226821");
-
-        when(userAuthClient.getUserInfo(token)).thenReturn(authResponse);
+        request.setClientId("CLI-1");
+        // Não é necessário preencher produtos para testar apenas o Controller (Web Layer)
 
         // Act & Assert
         mockMvc.perform(post("/order")
-                        .header("Authorization", token) // Header obrigatório agora
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
 
-        verify(userAuthClient).getUserInfo(token);
-        verify(orderService, times(1)).saveOrder(any(OrderRequestDTO.class), eq("48425226821"));
+        verify(orderService, times(1)).saveOrder(any(OrderRequestDTO.class));
     }
 
     @Test
-    @DisplayName("GET /order - Deve retornar página de pedidos")
+    @DisplayName("GET /order - Deve retornar página de pedidos com status 200")
     void getCategories_ShouldReturnPage() throws Exception {
         // Arrange
         Page<OrderResponseDTO> page = new PageImpl<>(Collections.emptyList());
@@ -75,8 +64,12 @@ class OrderControllerTest {
         // Act & Assert
         mockMvc.perform(get("/order")
                         .param("limit", "10")
+                        .param("offset", "0")
                         .param("page", "0"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+
+        verify(orderService).getAllOrders(any(Pageable.class));
     }
 
     @Test
@@ -95,7 +88,7 @@ class OrderControllerTest {
     }
 
     @Test
-    @DisplayName("PUT /order/{id} - Deve atualizar o pedido")
+    @DisplayName("PUT /order/{id} - Deve atualizar o pedido e retornar 200")
     void updateProduct_ShouldReturnOk() throws Exception {
         // Arrange
         String id = "ORD-123";
@@ -109,6 +102,7 @@ class OrderControllerTest {
         mockMvc.perform(put("/order/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId").value(id));
     }
 }
