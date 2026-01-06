@@ -4,8 +4,8 @@ services:
 
   db:
     build:
-      context: ./db
-      dockerfile: Dockerfile
+      context: db
+      dockerfile: db/Dockerfile
     env_file:
       - soat.env
     ports:
@@ -36,10 +36,10 @@ services:
 
   app:
     build:
-      context: ..
-      dockerfile: docker/app/Dockerfile
+      context: ../../../Desktop/pasta sem título
+      dockerfile: app/Dockerfile
     env_file:
-      - ./soat.env
+      - soat.env
     ports:
       - "8080:8080"
     depends_on:
